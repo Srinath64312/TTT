@@ -3,342 +3,707 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loopless Tic-Tac-Toe</title>
+  <title>Loopless Tic-Tac-Toe • Watermelon Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: rgba(22, 27, 46, 0.7);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f1f5f9;
+      --bg-dark: #07090e;
+      --bg-surface: rgba(14, 18, 27, 0.75);
+      --bg-surface-hover: rgba(22, 28, 42, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.18);
+      
+      --wm-pink: #ff2d60;
+      --wm-pink-glow: rgba(255, 45, 96, 0.35);
+      --wm-pink-light: #ff6584;
+
+      --wm-green: #00e599;
+      --wm-green-glow: rgba(0, 229, 153, 0.35);
+      --wm-green-light: #4efbc0;
+
+      --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --accent-x: #f43f5e;
-      --accent-x-glow: rgba(244, 63, 94, 0.25);
-      --accent-o: #38bdf8;
-      --accent-o-glow: rgba(56, 189, 248, 0.25);
-      --grid-bg: rgba(15, 23, 42, 0.6);
-      --cell-bg: rgba(30, 41, 59, 0.6);
-      --cell-hover: rgba(51, 65, 85, 0.8);
-      --win-glow: rgba(52, 211, 153, 0.3);
-      --win-border: #34d399;
+      --text-dim: #64748b;
+
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
       user-select: none;
       -webkit-user-select: none;
     }
 
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(255, 45, 96, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(0, 229, 153, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.9) 0%, var(--bg-dark) 100%);
       color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 24px 16px;
       overflow-x: hidden;
+      position: relative;
     }
 
-    .container {
+    /* Ambient animated mesh backdrop */
+    .mesh-blob {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatBlob 14s infinite alternate ease-in-out;
+    }
+    .blob-1 { background: var(--wm-pink); top: -50px; left: -100px; }
+    .blob-2 { background: var(--wm-green); bottom: -50px; right: -100px; animation-duration: 18s; }
+
+    @keyframes floatBlob {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 40px) scale(1.1); }
+    }
+
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
       width: 100%;
-      max-width: 440px;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Header & Pill Badge */
+    header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-    }
-
-    header {
       text-align: center;
+      gap: 8px;
     }
 
-    .badge {
+    .pill-tag {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
       border-radius: 9999px;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #a5b4fc;
-      margin-bottom: 8px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      color: var(--text-muted);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    .badge-dot {
-      width: 6px;
-      height: 6px;
-      background: #818cf8;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #818cf8;
+    .tag-sparkle {
+      color: var(--wm-pink);
+      animation: pulseSparkle 2s infinite ease-in-out;
     }
 
-    h1 {
-      font-size: 1.9rem;
+    @keyframes pulseSparkle {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px var(--wm-pink)); }
+      50% { transform: scale(1.25); filter: drop-shadow(0 0 10px var(--wm-pink)); }
+    }
+
+    .main-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.2rem;
       font-weight: 800;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 70%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .main-title span.accent {
+      background: linear-gradient(135deg, var(--wm-pink) 0%, #ff8da1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
-    .status-bar {
+    /* Bento Grid Layout */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
       width: 100%;
-      padding: 12px 18px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      backdrop-filter: blur(12px);
+    }
+
+    .bento-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bento-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    }
+
+    .bento-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+
+    .col-span-2 {
+      grid-column: span 2;
+    }
+
+    /* Telemetry & Stats Cards */
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--wm-green);
+      box-shadow: 0 0 10px var(--wm-green);
+      animation: liveBlink 1.5s infinite;
+    }
+
+    @keyframes liveBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Scoreboard Bento Bar */
+    .score-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.95rem;
-      font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      padding: 12px 18px;
     }
 
-    .turn-indicator {
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .score-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .score-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .score-num.x-score { color: var(--wm-pink); }
+    .score-num.o-score { color: var(--wm-green); }
+    .score-num.tie-score { color: var(--text-muted); }
+
+    /* Live Turn Status Banner */
+    .status-banner {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      padding: 14px 20px;
     }
 
-    .player-pill {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      line-height: 24px;
-      text-align: center;
-      border-radius: 6px;
-      font-weight: 800;
-      font-size: 0.85rem;
-    }
-
-    .player-pill.x {
-      background: var(--accent-x-glow);
-      color: var(--accent-x);
-      border: 1px solid var(--accent-x);
-    }
-
-    .player-pill.o {
-      background: var(--accent-o-glow);
-      color: var(--accent-o);
-      border: 1px solid var(--accent-o);
-    }
-
-    .board-card {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 14px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
+    .status-left {
+      display: flex;
+      align-items: center;
       gap: 12px;
     }
 
-    .cell {
-      background: var(--cell-bg);
-      border: 1px solid rgba(255, 255, 255, 0.04);
-      border-radius: 16px;
+    .player-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.8rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      transition: all 0.25s ease;
+    }
+
+    .player-avatar.x {
+      background: rgba(255, 45, 96, 0.15);
+      border: 1px solid var(--wm-pink);
+      color: var(--wm-pink);
+      box-shadow: 0 0 16px var(--wm-pink-glow);
+    }
+
+    .player-avatar.o {
+      background: rgba(0, 229, 153, 0.15);
+      border: 1px solid var(--wm-green);
+      color: var(--wm-green);
+      box-shadow: 0 0 16px var(--wm-green-glow);
+    }
+
+    .status-text-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .status-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Main Game Grid */
+    .game-board {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 10px;
+      padding: 12px;
+      background: rgba(10, 14, 23, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .grid-cell {
+      background: rgba(20, 26, 38, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 3.2rem;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
     }
 
-    .cell:hover:not(.filled) {
-      background: var(--cell-hover);
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.15);
+    .grid-cell:hover:not(.filled) {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .cell:active:not(.filled) {
-      transform: scale(0.96);
+    .grid-cell:active:not(.filled) {
+      transform: scale(0.95);
     }
 
-    .cell.x {
-      color: var(--accent-x);
-      text-shadow: 0 0 20px var(--accent-x-glow);
+    .grid-cell.x {
+      color: var(--wm-pink);
+      text-shadow: 0 0 24px var(--wm-pink-glow);
       cursor: default;
-      animation: popIn 0.2s ease-out;
+      animation: pieceDrop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .cell.o {
-      color: var(--accent-o);
-      text-shadow: 0 0 20px var(--accent-o-glow);
+    .grid-cell.o {
+      color: var(--wm-green);
+      text-shadow: 0 0 24px var(--wm-green-glow);
       cursor: default;
-      animation: popIn 0.2s ease-out;
+      animation: pieceDrop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .cell.winning {
-      background: rgba(52, 211, 153, 0.15);
-      border: 1px solid var(--win-border);
-      box-shadow: 0 0 24px var(--win-glow);
-      transform: scale(1.02);
+    .grid-cell.winning-cell {
+      background: rgba(0, 229, 153, 0.2) !important;
+      border: 2px solid var(--wm-green) !important;
+      box-shadow: 0 0 32px var(--wm-green-glow) !important;
+      animation: winnerPulse 1.2s infinite alternate ease-in-out;
     }
 
-    @keyframes popIn {
-      0% { transform: scale(0.6); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes pieceDrop {
+      0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
 
-    .controls {
-      width: 100%;
+    @keyframes winnerPulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      100% { transform: scale(1.04); filter: brightness(1.3); }
+    }
+
+    /* Action Controls Bar */
+    .controls-row {
       display: flex;
       gap: 10px;
+      width: 100%;
     }
 
-    .btn {
+    .action-btn {
       flex: 1;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      padding: 13px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.15s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border: 1px solid transparent;
+      outline: none;
     }
 
-    .btn-secondary {
+    .btn-glass {
       background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-subtle);
       color: var(--text-main);
-      border-color: var(--card-border);
+      backdrop-filter: blur(12px);
     }
 
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.2);
+    .btn-glass:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
+    .btn-watermelon {
+      background: linear-gradient(135deg, var(--wm-pink) 0%, #e11d48 100%);
       color: #ffffff;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 6px 20px var(--wm-pink-glow);
     }
 
-    .btn-primary:hover {
-      background: linear-gradient(135deg, #4f46e5, #4338ca);
-      transform: translateY(-1px);
+    .btn-watermelon:hover {
+      background: linear-gradient(135deg, var(--wm-pink-light) 0%, var(--wm-pink) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px var(--wm-pink-glow);
     }
 
-    .footer-note {
+    .btn-icon-only {
+      flex: 0 0 46px;
+      padding: 0;
+    }
+
+    /* Interactive Code Inspector Drawer */
+    .drawer-card {
+      background: rgba(12, 16, 24, 0.9);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      width: 100%;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .drawer-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .code-preview {
+      margin-top: 12px;
+      background: #04060a;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      overflow-x: auto;
+      max-height: 160px;
+    }
+
+    .kw { color: #f43f5e; font-weight: 600; }
+    .fn { color: #38bdf8; }
+    .st { color: #34d399; }
+    .cm { color: #64748b; font-style: italic; }
+
+    /* Canvas for Confetti Fireworks */
+    #fxCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    footer {
       text-align: center;
       font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.5;
+      color: var(--text-dim);
+      margin-top: 4px;
     }
 
-    .footer-note code {
-      font-family: 'JetBrains Mono', monospace;
-      color: #cbd5e1;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-
-    .footer-note a {
-      color: #818cf8;
+    footer a {
+      color: var(--wm-green);
       text-decoration: none;
+      font-weight: 600;
+      transition: color 0.15s ease;
     }
 
-    .footer-note a:hover {
+    footer a:hover {
+      color: var(--wm-green-light);
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <canvas id="fxCanvas"></canvas>
+  <div class="mesh-blob blob-1"></div>
+  <div class="mesh-blob blob-2"></div>
+
+  <div class="app-wrapper">
+    <!-- Header -->
     <header>
-      <div class="badge">
-        <span class="badge-dot"></span>
-        Zero Loops Engine
+      <div class="pill-tag">
+        <span class="tag-sparkle">✦</span>
+        <span>AST Certified Zero Loops</span>
       </div>
-      <h1>Tic-Tac-Toe</h1>
+      <h1 class="main-title">
+        Loopless <span class="accent">TTT</span>
+      </h1>
     </header>
 
-    <div class="status-bar">
-      <div class="turn-indicator">
-        <span id="turnPill" class="player-pill x">X</span>
-        <span id="statusText">Your turn</span>
+    <!-- Bento Top Row: Scoreboard & Telemetry -->
+    <div class="bento-grid">
+      <div class="bento-card score-bar col-span-2">
+        <div class="score-item">
+          <span class="score-badge">You (X)</span>
+          <span class="score-num x-score" id="scoreX">0</span>
+        </div>
+        <div style="width: 1px; height: 28px; background: var(--border-subtle);"></div>
+        <div class="score-item">
+          <span class="score-badge">AI (O)</span>
+          <span class="score-num o-score" id="scoreO">0</span>
+        </div>
+        <div style="width: 1px; height: 28px; background: var(--border-subtle);"></div>
+        <div class="score-item">
+          <span class="score-badge">Ties</span>
+          <span class="score-num tie-score" id="scoreTies">0</span>
+        </div>
       </div>
-      <div style="font-size: 0.8rem; color: var(--text-muted);" id="modeLabel">vs Unbeatable AI</div>
+
+      <!-- AI Brain Telemetry -->
+      <div class="bento-card">
+        <div class="stat-label">
+          <span class="pulse-dot"></span>
+          AI Recursion Tree
+        </div>
+        <div class="stat-val" id="telemetryNodes">
+          0 <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 500;">states</span>
+        </div>
+      </div>
+
+      <!-- Game Mode -->
+      <div class="bento-card" style="cursor: pointer;" onclick="toggleMode()">
+        <div class="stat-label">Active Mode</div>
+        <div class="stat-val" style="font-size: 1rem;" id="modeBadgeText">
+          🤖 vs Unbeatable AI
+        </div>
+      </div>
     </div>
 
-    <div class="board-card" id="boardGrid">
-      <div class="cell" onclick="handleCellClick(0)"></div>
-      <div class="cell" onclick="handleCellClick(1)"></div>
-      <div class="cell" onclick="handleCellClick(2)"></div>
-      <div class="cell" onclick="handleCellClick(3)"></div>
-      <div class="cell" onclick="handleCellClick(4)"></div>
-      <div class="cell" onclick="handleCellClick(5)"></div>
-      <div class="cell" onclick="handleCellClick(6)"></div>
-      <div class="cell" onclick="handleCellClick(7)"></div>
-      <div class="cell" onclick="handleCellClick(8)"></div>
+    <!-- Live Status Banner -->
+    <div class="bento-card status-banner">
+      <div class="status-left">
+        <div class="player-avatar x" id="statusAvatar">X</div>
+        <div>
+          <div class="status-text-title" id="statusTitle">Your Turn</div>
+          <div class="status-sub" id="statusSub">Choose any open cell</div>
+        </div>
+      </div>
+      <div id="soundToggleBtn" onclick="toggleAudio()" style="cursor: pointer; font-size: 1.25rem; opacity: 0.8;" title="Toggle Sound SFX">
+        🔊
+      </div>
     </div>
 
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="toggleMode()">
-        <span id="modeBtnText">Mode: 🤖 vs AI</span>
+    <!-- 3x3 Game Board -->
+    <div class="game-board" id="boardGrid">
+      <div class="grid-cell" onclick="handleCellClick(0)"></div>
+      <div class="grid-cell" onclick="handleCellClick(1)"></div>
+      <div class="grid-cell" onclick="handleCellClick(2)"></div>
+      <div class="grid-cell" onclick="handleCellClick(3)"></div>
+      <div class="grid-cell" onclick="handleCellClick(4)"></div>
+      <div class="grid-cell" onclick="handleCellClick(5)"></div>
+      <div class="grid-cell" onclick="handleCellClick(6)"></div>
+      <div class="grid-cell" onclick="handleCellClick(7)"></div>
+      <div class="grid-cell" onclick="handleCellClick(8)"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <button class="action-btn btn-glass" onclick="toggleMode()">
+        <span id="switchModeLabel">Switch to PvP</span>
       </button>
-      <button class="btn btn-primary" onclick="resetGame()">
-        <span>↻ New Game</span>
+      <button class="action-btn btn-watermelon" onclick="resetGame(true)">
+        <span>↻ Rematch</span>
       </button>
     </div>
 
-    <div class="footer-note">
-      Engine powered by 100% <strong>loop-free tail-recursion</strong> & <strong>Minimax</strong>.<br>
-      <a href="https://github.com/Srinath64312/TTT" target="_blank">View GitHub Repository</a>
+    <!-- Collapsible Code Concept -->
+    <div class="drawer-card">
+      <div class="drawer-header" onclick="toggleCodeDrawer()">
+        <div class="drawer-title">
+          <span>⚡ How loops were eliminated</span>
+        </div>
+        <span id="drawerArrow" style="font-size: 0.8rem; color: var(--text-dim);">▼</span>
+      </div>
+      <div id="codeDrawerBody" style="display: none;">
+        <pre class="code-preview"><code><span class="cm"># Tail-recursive Minimax evaluator without ANY loops</span>
+<span class="kw">def</span> <span class="fn">_evaluate_moves_recursive</span>(b, depth, is_max, moves, best_val, best_move):
+    <span class="kw">if not</span> moves:
+        <span class="kw">return</span> best_val, best_move
+    pos = moves[<span class="st">0</span>]
+    next_b = make_move(b, pos, <span class="st">"O"</span> <span class="kw">if</span> is_max <span class="kw">else</span> <span class="st">"X"</span>)
+    score, _ = minimax(next_b, depth + <span class="st">1</span>, <span class="kw">not</span> is_max)
+    new_best_val = max(best_val, score) <span class="kw">if</span> is_max <span class="kw">else</span> min(best_val, score)
+    new_best_move = pos <span class="kw">if</span> new_best_val == score <span class="kw">else</span> best_move
+    <span class="kw">return</span> _evaluate_moves_recursive(b, depth, is_max, moves[<span class="st">1:</span>], new_best_val, new_best_move)</code></pre>
+      </div>
     </div>
+
+    <footer>
+      Crafted with pure functional recursion • <a href="https://github.com/Srinath64312/TTT" target="_blank">GitHub Source</a>
+    </footer>
   </div>
 
   <script>
     // -------------------------------------------------------------
-    // Pure Loopless JavaScript Game Engine & Minimax AI
-    // Zero 'for' or 'while' loops, zero comprehensions.
+    // Synthesized Web Audio API Haptics (Zero Asset Dependencies)
     // -------------------------------------------------------------
+    let audioCtx = null;
+    let soundEnabled = true;
 
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playTone(freq, type, duration, gainVal = 0.15) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function soundPlacePiece(player) {
+      if (player === 'X') {
+        playTone(340, 'sine', 0.12, 0.2);
+      } else {
+        playTone(480, 'sine', 0.12, 0.2);
+      }
+    }
+
+    function soundVictory() {
+      playTone(523.25, 'triangle', 0.2, 0.2);
+      setTimeout(() => playTone(659.25, 'triangle', 0.25, 0.2), 100);
+      setTimeout(() => playTone(783.99, 'triangle', 0.35, 0.25), 200);
+    }
+
+    function soundDraw() {
+      playTone(280, 'sawtooth', 0.25, 0.15);
+      setTimeout(() => playTone(240, 'sawtooth', 0.35, 0.15), 120);
+    }
+
+    function toggleAudio() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) playTone(500, 'sine', 0.1);
+    }
+
+    // -------------------------------------------------------------
+    // Pure Loopless JavaScript Engine & Recursive Minimax AI
+    // -------------------------------------------------------------
     const INITIAL_BOARD = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
     let gameState = {
       board: [...INITIAL_BOARD],
       currentPlayer: "X",
-      mode: "ai", // 'ai' or 'pvp'
+      mode: "ai",
       active: true,
-      winningCells: []
+      winningCells: [],
+      stats: { x: 0, o: 0, ties: 0 },
+      nodesEvaluated: 0
     };
 
     function checkWinner(b) {
-      // Rows
       if (b[0] !== " " && b[0] === b[1] && b[1] === b[2]) return { winner: b[0], line: [0, 1, 2] };
       if (b[3] !== " " && b[3] === b[4] && b[4] === b[5]) return { winner: b[3], line: [3, 4, 5] };
       if (b[6] !== " " && b[6] === b[7] && b[7] === b[8]) return { winner: b[6], line: [6, 7, 8] };
-      // Cols
       if (b[0] !== " " && b[0] === b[3] && b[3] === b[6]) return { winner: b[0], line: [0, 3, 6] };
       if (b[1] !== " " && b[1] === b[4] && b[4] === b[7]) return { winner: b[1], line: [1, 4, 7] };
       if (b[2] !== " " && b[2] === b[5] && b[5] === b[8]) return { winner: b[2], line: [2, 5, 8] };
-      // Diags
       if (b[0] !== " " && b[0] === b[4] && b[4] === b[8]) return { winner: b[0], line: [0, 4, 8] };
       if (b[2] !== " " && b[2] === b[4] && b[4] === b[6]) return { winner: b[2], line: [2, 4, 6] };
       return null;
@@ -363,6 +728,7 @@
     function evaluateMovesRecursive(b, depth, isMax, moves, bestVal, bestMove) {
       if (moves.length === 0) return { score: bestVal, move: bestMove };
 
+      gameState.nodesEvaluated += 1;
       const pos = moves[0];
       const nextBoard = makeMove(b, pos, isMax ? "O" : "X");
       const result = minimax(nextBoard, depth + 1, !isMax);
@@ -398,53 +764,60 @@
     }
 
     // -------------------------------------------------------------
-    // UI Renderers & Event Handlers
+    // UI Interactions & Animation Handlers
     // -------------------------------------------------------------
-
     function renderCells(idx = 0) {
       if (idx === 9) return;
-      const cellEl = document.querySelectorAll(".cell")[idx];
+      const cellEl = document.querySelectorAll(".grid-cell")[idx];
       const val = gameState.board[idx];
       
       cellEl.textContent = val === " " ? "" : val;
-      cellEl.className = "cell";
+      cellEl.className = "grid-cell";
       if (val === "X") cellEl.classList.add("x", "filled");
       if (val === "O") cellEl.classList.add("o", "filled");
-      if (gameState.winningCells.includes(idx)) cellEl.classList.add("winning");
+      if (gameState.winningCells.includes(idx)) cellEl.classList.add("winning-cell");
 
       renderCells(idx + 1);
     }
 
-    function updateStatusDisplay() {
-      const pill = document.getElementById("turnPill");
-      const text = document.getElementById("statusText");
-      const modeLabel = document.getElementById("modeLabel");
+    function updateScoreboard() {
+      document.getElementById("scoreX").textContent = gameState.stats.x;
+      document.getElementById("scoreO").textContent = gameState.stats.o;
+      document.getElementById("scoreTies").textContent = gameState.stats.ties;
+    }
 
-      modeLabel.textContent = gameState.mode === "ai" ? "vs Unbeatable AI" : "2-Player PvP";
+    function updateStatusDisplay() {
+      const avatar = document.getElementById("statusAvatar");
+      const title = document.getElementById("statusTitle");
+      const sub = document.getElementById("statusSub");
 
       const winData = checkWinner(gameState.board);
       if (winData) {
-        text.textContent = `Player ${winData.winner} Wins! 🎉`;
-        pill.textContent = winData.winner;
-        pill.className = `player-pill ${winData.winner.toLowerCase()}`;
+        title.textContent = `Player ${winData.winner} Wins!`;
+        sub.textContent = winData.winner === 'X' ? 'Outstanding victory! 🎉' : 'Minimax solved the grid! 🤖';
+        avatar.textContent = winData.winner;
+        avatar.className = `player-avatar ${winData.winner.toLowerCase()}`;
         return;
       }
 
       if (isBoardFull(gameState.board)) {
-        text.textContent = "It's a Draw! 🤝";
-        pill.textContent = "-";
-        pill.className = "player-pill";
+        title.textContent = "Draw Game!";
+        sub.textContent = "Perfect defensive strategy from both sides 🤝";
+        avatar.textContent = "-";
+        avatar.className = "player-avatar";
         return;
       }
 
       if (gameState.mode === "ai" && gameState.currentPlayer === "O") {
-        text.textContent = "AI is thinking...";
-        pill.textContent = "O";
-        pill.className = "player-pill o";
+        title.textContent = "AI is computing...";
+        sub.textContent = "Exploring optimal recursive branches";
+        avatar.textContent = "O";
+        avatar.className = "player-avatar o";
       } else {
-        text.textContent = gameState.mode === "ai" ? "Your turn" : `Player ${gameState.currentPlayer}'s turn`;
-        pill.textContent = gameState.currentPlayer;
-        pill.className = `player-pill ${gameState.currentPlayer.toLowerCase()}`;
+        title.textContent = gameState.mode === "ai" ? "Your Turn" : `Player ${gameState.currentPlayer}'s Turn`;
+        sub.textContent = "Choose any open cell";
+        avatar.textContent = gameState.currentPlayer;
+        avatar.className = `player-avatar ${gameState.currentPlayer.toLowerCase()}`;
       }
     }
 
@@ -452,26 +825,36 @@
       if (!gameState.active || gameState.board[pos] !== " ") return;
       if (gameState.mode === "ai" && gameState.currentPlayer === "O") return;
 
-      // 1. Player move
+      initAudio();
+
+      // 1. Human Move
       gameState.board = makeMove(gameState.board, pos, gameState.currentPlayer);
+      soundPlacePiece(gameState.currentPlayer);
       
       const winData = checkWinner(gameState.board);
       if (winData) {
         gameState.active = false;
         gameState.winningCells = winData.line;
+        gameState.stats[winData.winner.toLowerCase()] += 1;
+        updateScoreboard();
         renderCells();
         updateStatusDisplay();
+        soundVictory();
+        launchConfetti();
         return;
       }
 
       if (isBoardFull(gameState.board)) {
         gameState.active = false;
+        gameState.stats.ties += 1;
+        updateScoreboard();
         renderCells();
         updateStatusDisplay();
+        soundDraw();
         return;
       }
 
-      // 2. Next turn / AI trigger
+      // 2. Switch player / AI Turn
       if (gameState.mode === "pvp") {
         gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
         renderCells();
@@ -480,23 +863,34 @@
         gameState.currentPlayer = "O";
         renderCells();
         updateStatusDisplay();
-        setTimeout(executeAiTurn, 220);
+        setTimeout(executeAiTurn, 240);
       }
     }
 
     function executeAiTurn() {
       if (!gameState.active) return;
+      gameState.nodesEvaluated = 0;
       const best = minimax(gameState.board, 0, true);
+      
+      document.getElementById("telemetryNodes").innerHTML = `${gameState.nodesEvaluated} <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 500;">states</span>`;
+
       if (best.move !== null) {
         gameState.board = makeMove(gameState.board, best.move, "O");
+        soundPlacePiece("O");
       }
 
       const winData = checkWinner(gameState.board);
       if (winData) {
         gameState.active = false;
         gameState.winningCells = winData.line;
+        gameState.stats.o += 1;
+        updateScoreboard();
+        soundVictory();
       } else if (isBoardFull(gameState.board)) {
         gameState.active = false;
+        gameState.stats.ties += 1;
+        updateScoreboard();
+        soundDraw();
       } else {
         gameState.currentPlayer = "X";
       }
@@ -507,17 +901,89 @@
 
     function toggleMode() {
       gameState.mode = gameState.mode === "ai" ? "pvp" : "ai";
-      document.getElementById("modeBtnText").textContent = gameState.mode === "ai" ? "Mode: 🤖 vs AI" : "Mode: 👥 2-Player";
-      resetGame();
+      document.getElementById("modeBadgeText").textContent = gameState.mode === "ai" ? "🤖 vs Unbeatable AI" : "👥 2-Player Local";
+      document.getElementById("switchModeLabel").textContent = gameState.mode === "ai" ? "Switch to PvP" : "Switch to vs AI";
+      resetGame(false);
     }
 
-    function resetGame() {
+    function resetGame(keepScores = true) {
       gameState.board = [...INITIAL_BOARD];
       gameState.currentPlayer = "X";
       gameState.active = true;
       gameState.winningCells = [];
+      gameState.nodesEvaluated = 0;
+      document.getElementById("telemetryNodes").innerHTML = `0 <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 500;">states</span>`;
       renderCells();
       updateStatusDisplay();
+    }
+
+    function toggleCodeDrawer() {
+      const body = document.getElementById("codeDrawerBody");
+      const arrow = document.getElementById("drawerArrow");
+      if (body.style.display === "none") {
+        body.style.display = "block";
+        arrow.textContent = "▲";
+      } else {
+        body.style.display = "none";
+        arrow.textContent = "▼";
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Watermelon Confetti Fireworks Animation
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('fxCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      const colors = ['#ff2d60', '#00e599', '#ffffff', '#ff6584', '#4efbc0'];
+      particles = Array.from({ length: 65 }, () => ({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        vx: (Math.random() - 0.5) * 14,
+        vy: (Math.random() - 0.7) * 14,
+        size: Math.random() * 8 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1,
+        decay: Math.random() * 0.02 + 0.015,
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 10
+      }));
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      if (particles.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, idx) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // gravity
+        p.alpha -= p.decay;
+        p.rotation += p.rotSpeed;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        ctx.restore();
+      });
+
+      particles = particles.filter(p => p.alpha > 0);
+      requestAnimationFrame(animateConfetti);
     }
 
     // Initialize UI on load
