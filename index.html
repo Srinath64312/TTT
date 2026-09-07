@@ -3,29 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loopless Tic-Tac-Toe • Watermelon Edition</title>
+  <title>One Piece: Grand Line Tic-Tac-Toe • Loopless</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
   <style>
+    /* -------------------------------------------------------------
+       THEME VARIABLES
+    ------------------------------------------------------------- */
     :root {
-      --bg-dark: #07090e;
-      --bg-surface: rgba(14, 18, 27, 0.75);
-      --bg-surface-hover: rgba(22, 28, 42, 0.85);
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(255, 255, 255, 0.18);
-      
-      --wm-pink: #ff2d60;
-      --wm-pink-glow: rgba(255, 45, 96, 0.35);
-      --wm-pink-light: #ff6584;
+      /* Default: ONE PIECE THEME */
+      --theme-name: 'onepiece';
+      --bg-base: #06080e;
+      --bg-grad-1: rgba(220, 38, 38, 0.16);
+      --bg-grad-2: rgba(234, 179, 8, 0.12);
+      --card-bg: rgba(15, 18, 28, 0.85);
+      --card-border: rgba(234, 179, 8, 0.25);
+      --card-hover-border: rgba(234, 179, 8, 0.5);
 
-      --wm-green: #00e599;
-      --wm-green-glow: rgba(0, 229, 153, 0.35);
-      --wm-green-light: #4efbc0;
+      --color-x: #ff3b3b;
+      --color-x-glow: rgba(255, 59, 59, 0.4);
+      --color-x-bg: rgba(255, 59, 59, 0.15);
+
+      --color-o: #38bdf8;
+      --color-o-glow: rgba(56, 189, 248, 0.4);
+      --color-o-bg: rgba(56, 189, 248, 0.15);
+
+      --accent-gold: #f59e0b;
+      --accent-gold-glow: rgba(245, 158, 11, 0.4);
 
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --text-dim: #64748b;
+      --text-gold: #fbbf24;
 
       --radius-sm: 10px;
       --radius-md: 16px;
@@ -33,278 +42,340 @@
       --radius-xl: 32px;
     }
 
+    /* Watermelon Theme */
+    [data-theme="watermelon"] {
+      --bg-base: #07090e;
+      --bg-grad-1: rgba(255, 45, 96, 0.15);
+      --bg-grad-2: rgba(0, 229, 153, 0.15);
+      --card-bg: rgba(14, 18, 27, 0.85);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-hover-border: rgba(0, 229, 153, 0.4);
+      --color-x: #ff2d60;
+      --color-x-glow: rgba(255, 45, 96, 0.4);
+      --color-x-bg: rgba(255, 45, 96, 0.15);
+      --color-o: #00e599;
+      --color-o-glow: rgba(0, 229, 153, 0.4);
+      --color-o-bg: rgba(0, 229, 153, 0.15);
+      --text-gold: #00e599;
+    }
+
+    /* Cyberpunk Arcade Theme */
+    [data-theme="cyber"] {
+      --bg-base: #030308;
+      --bg-grad-1: rgba(168, 85, 247, 0.2);
+      --bg-grad-2: rgba(6, 182, 212, 0.2);
+      --card-bg: rgba(10, 10, 20, 0.9);
+      --card-border: rgba(168, 85, 247, 0.35);
+      --card-hover-border: #06b6d4;
+      --color-x: #ec4899;
+      --color-x-glow: rgba(236, 72, 153, 0.5);
+      --color-x-bg: rgba(236, 72, 153, 0.15);
+      --color-o: #06b6d4;
+      --color-o-glow: rgba(6, 182, 212, 0.5);
+      --color-o-bg: rgba(6, 182, 212, 0.15);
+      --text-gold: #06b6d4;
+    }
+
+    /* Neo-Brutalist Theme */
+    [data-theme="neobrutal"] {
+      --bg-base: #fef08a;
+      --bg-grad-1: rgba(244, 63, 94, 0.1);
+      --bg-grad-2: rgba(99, 102, 241, 0.1);
+      --card-bg: #ffffff;
+      --card-border: #000000;
+      --card-hover-border: #000000;
+      --color-x: #e11d48;
+      --color-x-glow: none;
+      --color-x-bg: #ffe4e6;
+      --color-o: #2563eb;
+      --color-o-glow: none;
+      --color-o-bg: #dbeafe;
+      --text-main: #000000;
+      --text-muted: #475569;
+      --text-gold: #000000;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Space Grotesk', -apple-system, sans-serif;
       user-select: none;
       -webkit-user-select: none;
     }
 
     body {
       min-height: 100vh;
-      background-color: var(--bg-dark);
+      background-color: var(--bg-base);
       background-image: 
-        radial-gradient(circle at 15% 15%, rgba(255, 45, 96, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 85% 85%, rgba(0, 229, 153, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.9) 0%, var(--bg-dark) 100%);
+        radial-gradient(circle at 10% 10%, var(--bg-grad-1) 0%, transparent 45%),
+        radial-gradient(circle at 90% 90%, var(--bg-grad-2) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(10, 14, 24, 0.9) 0%, var(--bg-base) 100%);
       color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px 16px;
+      padding: 20px 14px;
+      font-family: 'Space Grotesk', sans-serif;
       overflow-x: hidden;
       position: relative;
+      transition: background-color 0.3s ease;
     }
 
-    /* Ambient animated mesh backdrop */
-    .mesh-blob {
-      position: absolute;
-      width: 450px;
-      height: 450px;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.15;
-      pointer-events: none;
-      z-index: 0;
-      animation: floatBlob 14s infinite alternate ease-in-out;
-    }
-    .blob-1 { background: var(--wm-pink); top: -50px; left: -100px; }
-    .blob-2 { background: var(--wm-green); bottom: -50px; right: -100px; animation-duration: 18s; }
-
-    @keyframes floatBlob {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(40px, 40px) scale(1.1); }
+    [data-theme="neobrutal"] body {
+      background-image: none;
+      background-color: #fde047;
     }
 
-    .app-wrapper {
-      position: relative;
-      z-index: 1;
+    .container {
       width: 100%;
-      max-width: 520px;
+      max-width: 480px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
     }
 
-    /* Header & Pill Badge */
+    /* Top Nav & Theme Switcher */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .theme-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    [data-theme="neobrutal"] .theme-select-wrap {
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000;
+    }
+
+    .theme-select {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+    }
+    .theme-select option {
+      background: #0f172a;
+      color: #fff;
+    }
+
+    .sound-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .sound-btn:hover { transform: scale(1.1); }
+    [data-theme="neobrutal"] .sound-btn {
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    /* Header */
     header {
+      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
-      gap: 8px;
+      gap: 4px;
     }
 
-    .pill-tag {
+    .wanted-tag {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-gold);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 3px 14px;
+      border-radius: 6px;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    .tag-sparkle {
-      color: var(--wm-pink);
-      animation: pulseSparkle 2s infinite ease-in-out;
+    [data-theme="neobrutal"] .wanted-tag {
+      background: #000;
+      color: #fde047;
+      border: 2px solid #000;
     }
 
-    @keyframes pulseSparkle {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px var(--wm-pink)); }
-      50% { transform: scale(1.25); filter: drop-shadow(0 0 10px var(--wm-pink)); }
-    }
-
-    .main-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.04em;
+    .title-banner {
+      font-family: 'Cinzel', serif;
+      font-size: 2.1rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
       line-height: 1.1;
-      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 70%, #94a3b8 100%);
+      background: linear-gradient(135deg, #ffffff 30%, #fbbf24 80%, #d97706 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      text-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
     }
 
-    .main-title span.accent {
-      background: linear-gradient(135deg, var(--wm-pink) 0%, #ff8da1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    [data-theme="neobrutal"] .title-banner {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-text-fill-color: #000000;
+      text-shadow: none;
+      font-size: 2.3rem;
+      font-weight: 800;
     }
 
-    /* Bento Grid Layout */
-    .bento-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      width: 100%;
-    }
-
+    /* Bounty Bento Board */
     .bento-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
       padding: 14px 18px;
-      backdrop-filter: blur(20px);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      transition: all 0.2s ease;
     }
 
-    .bento-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    [data-theme="neobrutal"] .bento-card {
+      border: 3px solid #000;
+      box-shadow: 5px 5px 0 #000;
+      border-radius: 12px;
     }
 
-    .bento-card:hover {
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-    }
-
-    .col-span-2 {
-      grid-column: span 2;
-    }
-
-    /* Telemetry & Stats Cards */
-    .stat-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-      color: var(--text-dim);
-      margin-bottom: 4px;
+    .bounty-row {
       display: flex;
       align-items: center;
-      gap: 6px;
+      justify-content: space-between;
     }
 
-    .stat-val {
+    .bounty-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .bounty-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .bounty-amount {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-main);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-gold);
       display: flex;
       align-items: baseline;
-      gap: 6px;
+      gap: 4px;
+      text-shadow: 0 0 16px var(--accent-gold-glow);
     }
 
-    .pulse-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--wm-green);
-      box-shadow: 0 0 10px var(--wm-green);
-      animation: liveBlink 1.5s infinite;
+    [data-theme="neobrutal"] .bounty-amount {
+      text-shadow: none;
+      color: #000;
     }
 
-    @keyframes liveBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+    .bounty-rank {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--text-gold);
     }
 
-    /* Scoreboard Bento Bar */
-    .score-bar {
+    [data-theme="neobrutal"] .bounty-rank {
+      background: #f43f5e;
+      color: #fff;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    /* Battle Status Bar */
+    .status-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 18px;
     }
 
-    .score-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .score-badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-    }
-
-    .score-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.3rem;
-      font-weight: 800;
-    }
-    .score-num.x-score { color: var(--wm-pink); }
-    .score-num.o-score { color: var(--wm-green); }
-    .score-num.tie-score { color: var(--text-muted); }
-
-    /* Live Turn Status Banner */
-    .status-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-    }
-
-    .status-left {
+    .status-side {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    .player-avatar {
-      width: 38px;
-      height: 38px;
+    .pirate-icon {
+      width: 42px;
+      height: 42px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
+      font-size: 1.4rem;
       font-weight: 800;
       transition: all 0.25s ease;
     }
 
-    .player-avatar.x {
-      background: rgba(255, 45, 96, 0.15);
-      border: 1px solid var(--wm-pink);
-      color: var(--wm-pink);
-      box-shadow: 0 0 16px var(--wm-pink-glow);
+    .pirate-icon.x {
+      background: var(--color-x-bg);
+      border: 1px solid var(--color-x);
+      color: var(--color-x);
+      box-shadow: 0 0 18px var(--color-x-glow);
     }
 
-    .player-avatar.o {
-      background: rgba(0, 229, 153, 0.15);
-      border: 1px solid var(--wm-green);
-      color: var(--wm-green);
-      box-shadow: 0 0 16px var(--wm-green-glow);
+    .pirate-icon.o {
+      background: var(--color-o-bg);
+      border: 1px solid var(--color-o);
+      color: var(--color-o);
+      box-shadow: 0 0 18px var(--color-o-glow);
     }
 
-    .status-text-title {
+    [data-theme="neobrutal"] .pirate-icon {
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+    .status-main-text {
       font-size: 1.05rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-main);
     }
 
-    .status-sub {
-      font-size: 0.78rem;
+    .status-sub-text {
+      font-size: 0.76rem;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
     }
 
-    /* Main Game Grid */
-    .game-board {
+    /* 3x3 Grand Line Battle Grid */
+    .battle-grid {
       width: 100%;
       aspect-ratio: 1 / 1;
       display: grid;
@@ -312,170 +383,171 @@
       grid-template-rows: repeat(3, 1fr);
       gap: 10px;
       padding: 12px;
-      background: rgba(10, 14, 23, 0.85);
-      border: 1px solid var(--border-subtle);
+      background: rgba(10, 14, 24, 0.85);
+      border: 1px solid var(--card-border);
       border-radius: var(--radius-xl);
-      backdrop-filter: blur(24px);
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
-    .grid-cell {
-      background: rgba(20, 26, 38, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+    [data-theme="neobrutal"] .battle-grid {
+      background: #ffffff;
+      border: 3px solid #000;
+      box-shadow: 6px 6px 0 #000;
+      border-radius: 16px;
+    }
+
+    .grid-slot {
+      background: rgba(22, 28, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Cinzel', serif;
       font-size: 3.2rem;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
-      overflow: hidden;
     }
 
-    .grid-cell:hover:not(.filled) {
-      background: rgba(30, 41, 59, 0.85);
-      border-color: rgba(255, 255, 255, 0.16);
+    [data-theme="neobrutal"] .grid-slot {
+      background: #f8fafc;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0 #000;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 3.4rem;
+    }
+
+    .grid-slot:hover:not(.occupied) {
+      background: rgba(35, 45, 68, 0.85);
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
 
-    .grid-cell:active:not(.filled) {
-      transform: scale(0.95);
+    [data-theme="neobrutal"] .grid-slot:hover:not(.occupied) {
+      background: #e2e8f0;
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 #000;
     }
 
-    .grid-cell.x {
-      color: var(--wm-pink);
-      text-shadow: 0 0 24px var(--wm-pink-glow);
+    .grid-slot:active:not(.occupied) {
+      transform: scale(0.96);
+    }
+
+    .grid-slot.x {
+      color: var(--color-x);
+      text-shadow: 0 0 24px var(--color-x-glow);
       cursor: default;
-      animation: pieceDrop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: slashPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .grid-cell.o {
-      color: var(--wm-green);
-      text-shadow: 0 0 24px var(--wm-green-glow);
+    .grid-slot.o {
+      color: var(--color-o);
+      text-shadow: 0 0 24px var(--color-o-glow);
       cursor: default;
-      animation: pieceDrop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      animation: slashPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .grid-cell.winning-cell {
-      background: rgba(0, 229, 153, 0.2) !important;
-      border: 2px solid var(--wm-green) !important;
-      box-shadow: 0 0 32px var(--wm-green-glow) !important;
-      animation: winnerPulse 1.2s infinite alternate ease-in-out;
+    .grid-slot.haki-winning {
+      background: rgba(245, 158, 11, 0.25) !important;
+      border: 2px solid var(--accent-gold) !important;
+      box-shadow: 0 0 36px var(--accent-gold-glow) !important;
+      animation: hakiPulse 1.2s infinite alternate ease-in-out;
     }
 
-    @keyframes pieceDrop {
-      0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    [data-theme="neobrutal"] .grid-slot.haki-winning {
+      background: #86efac !important;
+      border: 3px solid #000 !important;
+      box-shadow: 4px 4px 0 #000 !important;
+      animation: none;
+    }
+
+    @keyframes slashPop {
+      0% { transform: scale(0.3) rotate(-20deg); opacity: 0; }
       100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
 
-    @keyframes winnerPulse {
+    @keyframes hakiPulse {
       0% { transform: scale(1); filter: brightness(1); }
-      100% { transform: scale(1.04); filter: brightness(1.3); }
+      100% { transform: scale(1.05); filter: brightness(1.4); }
     }
 
-    /* Action Controls Bar */
-    .controls-row {
-      display: flex;
+    /* Actions Bar */
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
       width: 100%;
     }
 
     .action-btn {
-      flex: 1;
-      padding: 13px 18px;
+      padding: 13px 16px;
       border-radius: var(--radius-md);
       font-size: 0.92rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s ease;
       border: 1px solid transparent;
       outline: none;
     }
 
-    .btn-glass {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--border-subtle);
-      color: var(--text-main);
-      backdrop-filter: blur(12px);
-    }
-
-    .btn-glass:hover {
-      background: rgba(255, 255, 255, 0.09);
-      border-color: var(--border-hover);
-      transform: translateY(-2px);
-    }
-
-    .btn-watermelon {
-      background: linear-gradient(135deg, var(--wm-pink) 0%, #e11d48 100%);
+    .btn-pirate-primary {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
       color: #ffffff;
-      box-shadow: 0 6px 20px var(--wm-pink-glow);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
     }
-
-    .btn-watermelon:hover {
-      background: linear-gradient(135deg, var(--wm-pink-light) 0%, var(--wm-pink) 100%);
+    .btn-pirate-primary:hover {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
       transform: translateY(-2px);
-      box-shadow: 0 10px 26px var(--wm-pink-glow);
     }
 
-    .btn-icon-only {
-      flex: 0 0 46px;
-      padding: 0;
+    .btn-pirate-secondary {
+      background: var(--card-bg);
+      border-color: var(--card-border);
+      color: var(--text-main);
+    }
+    .btn-pirate-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
     }
 
-    /* Interactive Code Inspector Drawer */
-    .drawer-card {
-      background: rgba(12, 16, 24, 0.9);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      width: 100%;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    [data-theme="neobrutal"] .btn-pirate-primary {
+      background: #f43f5e;
+      color: #fff;
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000;
+    }
+    [data-theme="neobrutal"] .btn-pirate-primary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 #000;
+    }
+    [data-theme="neobrutal"] .btn-pirate-secondary {
+      background: #ffffff;
+      color: #000;
+      border: 2px solid #000;
+      box-shadow: 3px 3px 0 #000;
     }
 
-    .drawer-header {
+    /* Scoreboard Tracker */
+    .stats-footer {
       display: flex;
+      justify-content: space-around;
       align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-    }
-
-    .drawer-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .code-preview {
-      margin-top: 12px;
-      background: #04060a;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: var(--radius-sm);
-      padding: 12px;
+      padding: 10px 16px;
+      font-size: 0.8rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      color: #94a3b8;
-      line-height: 1.6;
-      overflow-x: auto;
-      max-height: 160px;
+      color: var(--text-muted);
+    }
+    .stats-footer strong {
+      color: var(--text-main);
+      font-size: 0.95rem;
     }
 
-    .kw { color: #f43f5e; font-weight: 600; }
-    .fn { color: #38bdf8; }
-    .st { color: #34d399; }
-    .cm { color: #64748b; font-style: italic; }
-
-    /* Canvas for Confetti Fireworks */
     #fxCanvas {
       position: fixed;
       top: 0;
@@ -485,151 +557,99 @@
       pointer-events: none;
       z-index: 99;
     }
-
-    footer {
-      text-align: center;
-      font-size: 0.78rem;
-      color: var(--text-dim);
-      margin-top: 4px;
-    }
-
-    footer a {
-      color: var(--wm-green);
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.15s ease;
-    }
-
-    footer a:hover {
-      color: var(--wm-green-light);
-      text-decoration: underline;
-    }
   </style>
 </head>
-<body>
+<body data-theme="onepiece">
 
   <canvas id="fxCanvas"></canvas>
-  <div class="mesh-blob blob-1"></div>
-  <div class="mesh-blob blob-2"></div>
 
-  <div class="app-wrapper">
-    <!-- Header -->
-    <header>
-      <div class="pill-tag">
-        <span class="tag-sparkle">✦</span>
-        <span>AST Certified Zero Loops</span>
+  <div class="container">
+    <!-- Top Nav & Theme Switcher -->
+    <div class="top-nav">
+      <div class="theme-select-wrap">
+        <span style="font-size: 0.9rem;">🎨</span>
+        <select class="theme-select" id="themeSelector" onchange="changeTheme(this.value)">
+          <option value="onepiece">👒 One Piece (Grand Line)</option>
+          <option value="watermelon">🍉 Watermelon Cyber</option>
+          <option value="cyber">🕹️ Cyber Arcade</option>
+          <option value="neobrutal">🟨 Neo-Brutalist Pop</option>
+        </select>
       </div>
-      <h1 class="main-title">
-        Loopless <span class="accent">TTT</span>
-      </h1>
-    </header>
-
-    <!-- Bento Top Row: Scoreboard & Telemetry -->
-    <div class="bento-grid">
-      <div class="bento-card score-bar col-span-2">
-        <div class="score-item">
-          <span class="score-badge">You (X)</span>
-          <span class="score-num x-score" id="scoreX">0</span>
-        </div>
-        <div style="width: 1px; height: 28px; background: var(--border-subtle);"></div>
-        <div class="score-item">
-          <span class="score-badge">AI (O)</span>
-          <span class="score-num o-score" id="scoreO">0</span>
-        </div>
-        <div style="width: 1px; height: 28px; background: var(--border-subtle);"></div>
-        <div class="score-item">
-          <span class="score-badge">Ties</span>
-          <span class="score-num tie-score" id="scoreTies">0</span>
-        </div>
-      </div>
-
-      <!-- AI Brain Telemetry -->
-      <div class="bento-card">
-        <div class="stat-label">
-          <span class="pulse-dot"></span>
-          AI Recursion Tree
-        </div>
-        <div class="stat-val" id="telemetryNodes">
-          0 <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 500;">states</span>
-        </div>
-      </div>
-
-      <!-- Game Mode -->
-      <div class="bento-card" style="cursor: pointer;" onclick="toggleMode()">
-        <div class="stat-label">Active Mode</div>
-        <div class="stat-val" style="font-size: 1rem;" id="modeBadgeText">
-          🤖 vs Unbeatable AI
-        </div>
-      </div>
-    </div>
-
-    <!-- Live Status Banner -->
-    <div class="bento-card status-banner">
-      <div class="status-left">
-        <div class="player-avatar x" id="statusAvatar">X</div>
-        <div>
-          <div class="status-text-title" id="statusTitle">Your Turn</div>
-          <div class="status-sub" id="statusSub">Choose any open cell</div>
-        </div>
-      </div>
-      <div id="soundToggleBtn" onclick="toggleAudio()" style="cursor: pointer; font-size: 1.25rem; opacity: 0.8;" title="Toggle Sound SFX">
+      <div class="sound-btn" id="soundBtn" onclick="toggleAudio()" title="Toggle Haki Audio">
         🔊
       </div>
     </div>
 
-    <!-- 3x3 Game Board -->
-    <div class="game-board" id="boardGrid">
-      <div class="grid-cell" onclick="handleCellClick(0)"></div>
-      <div class="grid-cell" onclick="handleCellClick(1)"></div>
-      <div class="grid-cell" onclick="handleCellClick(2)"></div>
-      <div class="grid-cell" onclick="handleCellClick(3)"></div>
-      <div class="grid-cell" onclick="handleCellClick(4)"></div>
-      <div class="grid-cell" onclick="handleCellClick(5)"></div>
-      <div class="grid-cell" onclick="handleCellClick(6)"></div>
-      <div class="grid-cell" onclick="handleCellClick(7)"></div>
-      <div class="grid-cell" onclick="handleCellClick(8)"></div>
+    <!-- Header & Wanted Badge -->
+    <header>
+      <div class="wanted-tag">
+        <span>⚔️ WANTED • DEAD OR ALIVE ⚔️</span>
+      </div>
+      <h1 class="title-banner" id="mainTitle">GRAND LINE TTT</h1>
+    </header>
+
+    <!-- Bounty Card -->
+    <div class="bento-card">
+      <div class="bounty-row">
+        <div class="bounty-left">
+          <div class="bounty-title">Current Pirate Bounty</div>
+          <div class="bounty-amount">
+            <span style="font-size: 1.1rem; color: var(--text-muted);">฿</span>
+            <span id="bountyVal">30,000,000</span>
+          </div>
+        </div>
+        <div class="bounty-rank" id="bountyRank">East Blue Rookie</div>
+      </div>
+    </div>
+
+    <!-- Battle Status Banner -->
+    <div class="bento-card status-card">
+      <div class="status-side">
+        <div class="pirate-icon x" id="statusAvatar">👒</div>
+        <div>
+          <div class="status-main-text" id="statusTitle">Luffy's Turn</div>
+          <div class="status-sub-text" id="statusSub">Claim a territory on the Grand Line</div>
+        </div>
+      </div>
+      <div style="font-size: 0.75rem; color: var(--text-gold); font-weight: 700; text-align: right;" id="modeBadge">
+        vs Vegapunk AI
+      </div>
+    </div>
+
+    <!-- 3x3 Grand Line Grid -->
+    <div class="battle-grid" id="boardGrid">
+      <div class="grid-slot" onclick="handleCellClick(0)"></div>
+      <div class="grid-slot" onclick="handleCellClick(1)"></div>
+      <div class="grid-slot" onclick="handleCellClick(2)"></div>
+      <div class="grid-slot" onclick="handleCellClick(3)"></div>
+      <div class="grid-slot" onclick="handleCellClick(4)"></div>
+      <div class="grid-slot" onclick="handleCellClick(5)"></div>
+      <div class="grid-slot" onclick="handleCellClick(6)"></div>
+      <div class="grid-slot" onclick="handleCellClick(7)"></div>
+      <div class="grid-slot" onclick="handleCellClick(8)"></div>
     </div>
 
     <!-- Controls -->
-    <div class="controls-row">
-      <button class="action-btn btn-glass" onclick="toggleMode()">
-        <span id="switchModeLabel">Switch to PvP</span>
+    <div class="actions-grid">
+      <button class="action-btn btn-pirate-secondary" onclick="toggleMode()">
+        <span id="modeBtnText">👥 Switch to PvP</span>
       </button>
-      <button class="action-btn btn-watermelon" onclick="resetGame(true)">
-        <span>↻ Rematch</span>
+      <button class="action-btn btn-pirate-primary" onclick="resetGame(true)">
+        <span>⚔️ Set Sail (New)</span>
       </button>
     </div>
 
-    <!-- Collapsible Code Concept -->
-    <div class="drawer-card">
-      <div class="drawer-header" onclick="toggleCodeDrawer()">
-        <div class="drawer-title">
-          <span>⚡ How loops were eliminated</span>
-        </div>
-        <span id="drawerArrow" style="font-size: 0.8rem; color: var(--text-dim);">▼</span>
-      </div>
-      <div id="codeDrawerBody" style="display: none;">
-        <pre class="code-preview"><code><span class="cm"># Tail-recursive Minimax evaluator without ANY loops</span>
-<span class="kw">def</span> <span class="fn">_evaluate_moves_recursive</span>(b, depth, is_max, moves, best_val, best_move):
-    <span class="kw">if not</span> moves:
-        <span class="kw">return</span> best_val, best_move
-    pos = moves[<span class="st">0</span>]
-    next_b = make_move(b, pos, <span class="st">"O"</span> <span class="kw">if</span> is_max <span class="kw">else</span> <span class="st">"X"</span>)
-    score, _ = minimax(next_b, depth + <span class="st">1</span>, <span class="kw">not</span> is_max)
-    new_best_val = max(best_val, score) <span class="kw">if</span> is_max <span class="kw">else</span> min(best_val, score)
-    new_best_move = pos <span class="kw">if</span> new_best_val == score <span class="kw">else</span> best_move
-    <span class="kw">return</span> _evaluate_moves_recursive(b, depth, is_max, moves[<span class="st">1:</span>], new_best_val, new_best_move)</code></pre>
-      </div>
+    <!-- Win/Loss Stats -->
+    <div class="bento-card stats-footer">
+      <div>Straw Hat Wins: <strong id="winsX" style="color: var(--color-x)">0</strong></div>
+      <div>Marine Wins: <strong id="winsO" style="color: var(--color-o)">0</strong></div>
+      <div>Draws: <strong id="tiesCount">0</strong></div>
     </div>
-
-    <footer>
-      Crafted with pure functional recursion • <a href="https://github.com/Srinath64312/TTT" target="_blank">GitHub Source</a>
-    </footer>
   </div>
 
   <script>
     // -------------------------------------------------------------
-    // Synthesized Web Audio API Haptics (Zero Asset Dependencies)
+    // Web Audio Synthesizer (One Piece Clashes & Fanfares)
     // -------------------------------------------------------------
     let audioCtx = null;
     let soundEnabled = true;
@@ -640,7 +660,7 @@
       }
     }
 
-    function playTone(freq, type, duration, gainVal = 0.15) {
+    function playTone(freq, type, duration, gainVal = 0.2) {
       if (!soundEnabled) return;
       try {
         initAudio();
@@ -655,36 +675,63 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
+      } catch(e) {}
     }
 
-    function soundPlacePiece(player) {
+    function soundClash(player) {
       if (player === 'X') {
-        playTone(340, 'sine', 0.12, 0.2);
+        // Sword slash chime
+        playTone(587.33, 'triangle', 0.15, 0.25);
+        setTimeout(() => playTone(880, 'sine', 0.12, 0.2), 60);
       } else {
-        playTone(480, 'sine', 0.12, 0.2);
+        // Marine Cannon boom
+        playTone(160, 'sawtooth', 0.2, 0.25);
+        setTimeout(() => playTone(110, 'sine', 0.25, 0.3), 70);
       }
     }
 
     function soundVictory() {
-      playTone(523.25, 'triangle', 0.2, 0.2);
-      setTimeout(() => playTone(659.25, 'triangle', 0.25, 0.2), 100);
-      setTimeout(() => playTone(783.99, 'triangle', 0.35, 0.25), 200);
+      // Grand Line Pirate Triumph Chime
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        setTimeout(() => playTone(freq, 'triangle', 0.3, 0.25), idx * 110);
+      });
     }
 
-    function soundDraw() {
-      playTone(280, 'sawtooth', 0.25, 0.15);
-      setTimeout(() => playTone(240, 'sawtooth', 0.35, 0.15), 120);
+    function soundDefeat() {
+      playTone(220, 'sawtooth', 0.3, 0.2);
+      setTimeout(() => playTone(180, 'sawtooth', 0.4, 0.2), 160);
     }
 
     function toggleAudio() {
       soundEnabled = !soundEnabled;
-      document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊' : '🔇';
-      if (soundEnabled) playTone(500, 'sine', 0.1);
+      document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) playTone(500, 'triangle', 0.1);
     }
 
     // -------------------------------------------------------------
-    // Pure Loopless JavaScript Engine & Recursive Minimax AI
+    // Bounty Ladder System
+    // -------------------------------------------------------------
+    const BOUNTY_TIERS = [
+      { amount: "30,000,000", rank: "East Blue Rookie" },
+      { amount: "100,000,000", rank: "Super Rookie 💥" },
+      { amount: "300,000,000", rank: "Grand Line Captain ⚔️" },
+      { amount: "500,000,000", rank: "Warlord Level ⚡" },
+      { amount: "1,500,000,000", rank: "Fifth Emperor 👑" },
+      { amount: "3,000,000,000", rank: "Yonko of the Sea 🔥" },
+      { amount: "5,564,800,000", rank: "PIRATE KING 👑🏴‍☠️" }
+    ];
+
+    let currentBountyIndex = 0;
+
+    function updateBountyDisplay() {
+      const tier = BOUNTY_TIERS[Math.min(currentBountyIndex, BOUNTY_TIERS.length - 1)];
+      document.getElementById('bountyVal').textContent = tier.amount;
+      document.getElementById('bountyRank').textContent = tier.rank;
+    }
+
+    // -------------------------------------------------------------
+    // 100% Loop-Free Game Engine & Recursive Minimax AI
     // -------------------------------------------------------------
     const INITIAL_BOARD = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
     let gameState = {
@@ -694,7 +741,7 @@
       active: true,
       winningCells: [],
       stats: { x: 0, o: 0, ties: 0 },
-      nodesEvaluated: 0
+      streak: 0
     };
 
     function checkWinner(b) {
@@ -728,7 +775,6 @@
     function evaluateMovesRecursive(b, depth, isMax, moves, bestVal, bestMove) {
       if (moves.length === 0) return { score: bestVal, move: bestMove };
 
-      gameState.nodesEvaluated += 1;
       const pos = moves[0];
       const nextBoard = makeMove(b, pos, isMax ? "O" : "X");
       const result = minimax(nextBoard, depth + 1, !isMax);
@@ -764,26 +810,30 @@
     }
 
     // -------------------------------------------------------------
-    // UI Interactions & Animation Handlers
+    // UI Renderers & Interactions
     // -------------------------------------------------------------
     function renderCells(idx = 0) {
       if (idx === 9) return;
-      const cellEl = document.querySelectorAll(".grid-cell")[idx];
+      const cellEl = document.querySelectorAll(".grid-slot")[idx];
       const val = gameState.board[idx];
       
-      cellEl.textContent = val === " " ? "" : val;
-      cellEl.className = "grid-cell";
-      if (val === "X") cellEl.classList.add("x", "filled");
-      if (val === "O") cellEl.classList.add("o", "filled");
-      if (gameState.winningCells.includes(idx)) cellEl.classList.add("winning-cell");
+      let symbol = "";
+      if (val === "X") symbol = "X";
+      if (val === "O") symbol = "O";
+
+      cellEl.textContent = symbol;
+      cellEl.className = "grid-slot";
+      if (val === "X") cellEl.classList.add("x", "occupied");
+      if (val === "O") cellEl.classList.add("o", "occupied");
+      if (gameState.winningCells.includes(idx)) cellEl.classList.add("haki-winning");
 
       renderCells(idx + 1);
     }
 
     function updateScoreboard() {
-      document.getElementById("scoreX").textContent = gameState.stats.x;
-      document.getElementById("scoreO").textContent = gameState.stats.o;
-      document.getElementById("scoreTies").textContent = gameState.stats.ties;
+      document.getElementById("winsX").textContent = gameState.stats.x;
+      document.getElementById("winsO").textContent = gameState.stats.o;
+      document.getElementById("tiesCount").textContent = gameState.stats.ties;
     }
 
     function updateStatusDisplay() {
@@ -793,31 +843,38 @@
 
       const winData = checkWinner(gameState.board);
       if (winData) {
-        title.textContent = `Player ${winData.winner} Wins!`;
-        sub.textContent = winData.winner === 'X' ? 'Outstanding victory! 🎉' : 'Minimax solved the grid! 🤖';
-        avatar.textContent = winData.winner;
-        avatar.className = `player-avatar ${winData.winner.toLowerCase()}`;
+        if (winData.winner === 'X') {
+          title.textContent = "Straw Hats Conquer! 🏴‍☠️";
+          sub.textContent = "Your bounty has escalated!";
+          avatar.textContent = "👑";
+          avatar.className = "pirate-icon x";
+        } else {
+          title.textContent = "Marines Suppress! ⚓";
+          sub.textContent = "Vegapunk AI defended the fleet!";
+          avatar.textContent = "⚓";
+          avatar.className = "pirate-icon o";
+        }
         return;
       }
 
       if (isBoardFull(gameState.board)) {
-        title.textContent = "Draw Game!";
-        sub.textContent = "Perfect defensive strategy from both sides 🤝";
-        avatar.textContent = "-";
-        avatar.className = "player-avatar";
+        title.textContent = "Deadlock on the Sea! 🤝";
+        sub.textContent = "Both crews fought to a standstill.";
+        avatar.textContent = "⚔️";
+        avatar.className = "pirate-icon";
         return;
       }
 
       if (gameState.mode === "ai" && gameState.currentPlayer === "O") {
-        title.textContent = "AI is computing...";
-        sub.textContent = "Exploring optimal recursive branches";
-        avatar.textContent = "O";
-        avatar.className = "player-avatar o";
+        title.textContent = "Vegapunk AI Calculating...";
+        sub.textContent = "Reading the winds of the Grand Line";
+        avatar.textContent = "⚓";
+        avatar.className = "pirate-icon o";
       } else {
-        title.textContent = gameState.mode === "ai" ? "Your Turn" : `Player ${gameState.currentPlayer}'s Turn`;
-        sub.textContent = "Choose any open cell";
-        avatar.textContent = gameState.currentPlayer;
-        avatar.className = `player-avatar ${gameState.currentPlayer.toLowerCase()}`;
+        title.textContent = gameState.mode === "ai" ? "Luffy's Turn (X)" : `Player ${gameState.currentPlayer}'s Turn`;
+        sub.textContent = "Claim an open sea quadrant";
+        avatar.textContent = gameState.currentPlayer === "X" ? "👒" : "⚓";
+        avatar.className = `pirate-icon ${gameState.currentPlayer.toLowerCase()}`;
       }
     }
 
@@ -827,20 +884,26 @@
 
       initAudio();
 
-      // 1. Human Move
+      // 1. Move applied
       gameState.board = makeMove(gameState.board, pos, gameState.currentPlayer);
-      soundPlacePiece(gameState.currentPlayer);
+      soundClash(gameState.currentPlayer);
       
       const winData = checkWinner(gameState.board);
       if (winData) {
         gameState.active = false;
         gameState.winningCells = winData.line;
         gameState.stats[winData.winner.toLowerCase()] += 1;
+        if (winData.winner === 'X') {
+          currentBountyIndex += 1;
+          updateBountyDisplay();
+          soundVictory();
+          launchPirateConfetti();
+        } else {
+          soundDefeat();
+        }
         updateScoreboard();
         renderCells();
         updateStatusDisplay();
-        soundVictory();
-        launchConfetti();
         return;
       }
 
@@ -850,11 +913,10 @@
         updateScoreboard();
         renderCells();
         updateStatusDisplay();
-        soundDraw();
         return;
       }
 
-      // 2. Switch player / AI Turn
+      // 2. Next turn / AI trigger
       if (gameState.mode === "pvp") {
         gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
         renderCells();
@@ -863,20 +925,17 @@
         gameState.currentPlayer = "O";
         renderCells();
         updateStatusDisplay();
-        setTimeout(executeAiTurn, 240);
+        setTimeout(executeAiTurn, 250);
       }
     }
 
     function executeAiTurn() {
       if (!gameState.active) return;
-      gameState.nodesEvaluated = 0;
       const best = minimax(gameState.board, 0, true);
-      
-      document.getElementById("telemetryNodes").innerHTML = `${gameState.nodesEvaluated} <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 500;">states</span>`;
 
       if (best.move !== null) {
         gameState.board = makeMove(gameState.board, best.move, "O");
-        soundPlacePiece("O");
+        soundClash("O");
       }
 
       const winData = checkWinner(gameState.board);
@@ -885,12 +944,11 @@
         gameState.winningCells = winData.line;
         gameState.stats.o += 1;
         updateScoreboard();
-        soundVictory();
+        soundDefeat();
       } else if (isBoardFull(gameState.board)) {
         gameState.active = false;
         gameState.stats.ties += 1;
         updateScoreboard();
-        soundDraw();
       } else {
         gameState.currentPlayer = "X";
       }
@@ -901,36 +959,35 @@
 
     function toggleMode() {
       gameState.mode = gameState.mode === "ai" ? "pvp" : "ai";
-      document.getElementById("modeBadgeText").textContent = gameState.mode === "ai" ? "🤖 vs Unbeatable AI" : "👥 2-Player Local";
-      document.getElementById("switchModeLabel").textContent = gameState.mode === "ai" ? "Switch to PvP" : "Switch to vs AI";
+      document.getElementById("modeBadge").textContent = gameState.mode === "ai" ? "vs Vegapunk AI" : "👥 2-Player Local";
+      document.getElementById("modeBtnText").textContent = gameState.mode === "ai" ? "👥 Switch to PvP" : "🤖 Switch to AI";
       resetGame(false);
     }
 
-    function resetGame(keepScores = true) {
+    function resetGame(keepBounty = true) {
       gameState.board = [...INITIAL_BOARD];
       gameState.currentPlayer = "X";
       gameState.active = true;
       gameState.winningCells = [];
-      gameState.nodesEvaluated = 0;
-      document.getElementById("telemetryNodes").innerHTML = `0 <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 500;">states</span>`;
       renderCells();
       updateStatusDisplay();
     }
 
-    function toggleCodeDrawer() {
-      const body = document.getElementById("codeDrawerBody");
-      const arrow = document.getElementById("drawerArrow");
-      if (body.style.display === "none") {
-        body.style.display = "block";
-        arrow.textContent = "▲";
-      } else {
-        body.style.display = "none";
-        arrow.textContent = "▼";
+    function changeTheme(themeName) {
+      document.body.setAttribute('data-theme', themeName);
+      if (themeName === 'onepiece') {
+        document.getElementById('mainTitle').textContent = "GRAND LINE TTT";
+      } else if (themeName === 'watermelon') {
+        document.getElementById('mainTitle').textContent = "WATERMELON TTT";
+      } else if (themeName === 'cyber') {
+        document.getElementById('mainTitle').textContent = "CYBER ARCADE TTT";
+      } else if (themeName === 'neobrutal') {
+        document.getElementById('mainTitle').textContent = "POP BRUTAL TTT";
       }
     }
 
     // -------------------------------------------------------------
-    // Watermelon Confetti Fireworks Animation
+    // Golden Straw Hat Confetti Fireworks
     // -------------------------------------------------------------
     const canvas = document.getElementById('fxCanvas');
     const ctx = canvas.getContext('2d');
@@ -943,19 +1000,19 @@
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
-    function launchConfetti() {
-      const colors = ['#ff2d60', '#00e599', '#ffffff', '#ff6584', '#4efbc0'];
-      particles = Array.from({ length: 65 }, () => ({
+    function launchPirateConfetti() {
+      const colors = ['#f59e0b', '#dc2626', '#fbbf24', '#ffffff', '#ef4444'];
+      particles = Array.from({ length: 80 }, () => ({
         x: canvas.width / 2,
         y: canvas.height / 2,
-        vx: (Math.random() - 0.5) * 14,
-        vy: (Math.random() - 0.7) * 14,
+        vx: (Math.random() - 0.5) * 16,
+        vy: (Math.random() - 0.7) * 16,
         size: Math.random() * 8 + 4,
         color: colors[Math.floor(Math.random() * colors.length)],
         alpha: 1,
         decay: Math.random() * 0.02 + 0.015,
         rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 10
+        rotSpeed: (Math.random() - 0.5) * 12
       }));
       animateConfetti();
     }
@@ -966,10 +1023,10 @@
         return;
       }
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p, idx) => {
+      particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.35; // gravity
+        p.vy += 0.35;
         p.alpha -= p.decay;
         p.rotation += p.rotSpeed;
 
@@ -986,7 +1043,8 @@
       requestAnimationFrame(animateConfetti);
     }
 
-    // Initialize UI on load
+    // Init display
+    updateBountyDisplay();
     resetGame();
   </script>
 </body>
