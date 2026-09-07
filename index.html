@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loopless Tic-Tac-Toe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(22, 27, 46, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-x: #f43f5e;
+      --accent-x-glow: rgba(244, 63, 94, 0.25);
+      --accent-o: #38bdf8;
+      --accent-o-glow: rgba(56, 189, 248, 0.25);
+      --grid-bg: rgba(15, 23, 42, 0.6);
+      --cell-bg: rgba(30, 41, 59, 0.6);
+      --cell-hover: rgba(51, 65, 85, 0.8);
+      --win-glow: rgba(52, 211, 153, 0.3);
+      --win-border: #34d399;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--bg) 70%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #818cf8;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #818cf8;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-bar {
+      width: 100%;
+      padding: 12px 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .turn-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .player-pill {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .player-pill.x {
+      background: var(--accent-x-glow);
+      color: var(--accent-x);
+      border: 1px solid var(--accent-x);
+    }
+
+    .player-pill.o {
+      background: var(--accent-o-glow);
+      color: var(--accent-o);
+      border: 1px solid var(--accent-o);
+    }
+
+    .board-card {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 14px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .cell {
+      background: var(--cell-bg);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cell:hover:not(.filled) {
+      background: var(--cell-hover);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .cell:active:not(.filled) {
+      transform: scale(0.96);
+    }
+
+    .cell.x {
+      color: var(--accent-x);
+      text-shadow: 0 0 20px var(--accent-x-glow);
+      cursor: default;
+      animation: popIn 0.2s ease-out;
+    }
+
+    .cell.o {
+      color: var(--accent-o);
+      text-shadow: 0 0 20px var(--accent-o-glow);
+      cursor: default;
+      animation: popIn 0.2s ease-out;
+    }
+
+    .cell.winning {
+      background: rgba(52, 211, 153, 0.15);
+      border: 1px solid var(--win-border);
+      box-shadow: 0 0 24px var(--win-glow);
+      transform: scale(1.02);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .controls {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      transform: translateY(-1px);
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .footer-note code {
+      font-family: 'JetBrains Mono', monospace;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .footer-note a {
+      color: #818cf8;
+      text-decoration: none;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Zero Loops Engine
+      </div>
+      <h1>Tic-Tac-Toe</h1>
+    </header>
+
+    <div class="status-bar">
+      <div class="turn-indicator">
+        <span id="turnPill" class="player-pill x">X</span>
+        <span id="statusText">Your turn</span>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);" id="modeLabel">vs Unbeatable AI</div>
+    </div>
+
+    <div class="board-card" id="boardGrid">
+      <div class="cell" onclick="handleCellClick(0)"></div>
+      <div class="cell" onclick="handleCellClick(1)"></div>
+      <div class="cell" onclick="handleCellClick(2)"></div>
+      <div class="cell" onclick="handleCellClick(3)"></div>
+      <div class="cell" onclick="handleCellClick(4)"></div>
+      <div class="cell" onclick="handleCellClick(5)"></div>
+      <div class="cell" onclick="handleCellClick(6)"></div>
+      <div class="cell" onclick="handleCellClick(7)"></div>
+      <div class="cell" onclick="handleCellClick(8)"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-secondary" onclick="toggleMode()">
+        <span id="modeBtnText">Mode: 🤖 vs AI</span>
+      </button>
+      <button class="btn btn-primary" onclick="resetGame()">
+        <span>↻ New Game</span>
+      </button>
+    </div>
+
+    <div class="footer-note">
+      Engine powered by 100% <strong>loop-free tail-recursion</strong> & <strong>Minimax</strong>.<br>
+      <a href="https://github.com/Srinath64312/TTT" target="_blank">View GitHub Repository</a>
+    </div>
+  </div>
+
+  <script>
+    // -------------------------------------------------------------
+    // Pure Loopless JavaScript Game Engine & Minimax AI
+    // Zero 'for' or 'while' loops, zero comprehensions.
+    // -------------------------------------------------------------
+
+    const INITIAL_BOARD = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
+    let gameState = {
+      board: [...INITIAL_BOARD],
+      currentPlayer: "X",
+      mode: "ai", // 'ai' or 'pvp'
+      active: true,
+      winningCells: []
+    };
+
+    function checkWinner(b) {
+      // Rows
+      if (b[0] !== " " && b[0] === b[1] && b[1] === b[2]) return { winner: b[0], line: [0, 1, 2] };
+      if (b[3] !== " " && b[3] === b[4] && b[4] === b[5]) return { winner: b[3], line: [3, 4, 5] };
+      if (b[6] !== " " && b[6] === b[7] && b[7] === b[8]) return { winner: b[6], line: [6, 7, 8] };
+      // Cols
+      if (b[0] !== " " && b[0] === b[3] && b[3] === b[6]) return { winner: b[0], line: [0, 3, 6] };
+      if (b[1] !== " " && b[1] === b[4] && b[4] === b[7]) return { winner: b[1], line: [1, 4, 7] };
+      if (b[2] !== " " && b[2] === b[5] && b[5] === b[8]) return { winner: b[2], line: [2, 5, 8] };
+      // Diags
+      if (b[0] !== " " && b[0] === b[4] && b[4] === b[8]) return { winner: b[0], line: [0, 4, 8] };
+      if (b[2] !== " " && b[2] === b[4] && b[4] === b[6]) return { winner: b[2], line: [2, 4, 6] };
+      return null;
+    }
+
+    function isBoardFull(b, idx = 0) {
+      if (idx === 9) return true;
+      if (b[idx] === " ") return false;
+      return isBoardFull(b, idx + 1);
+    }
+
+    function getAvailableMoves(b, idx = 0) {
+      if (idx === 9) return [];
+      const tail = getAvailableMoves(b, idx + 1);
+      return b[idx] === " " ? [idx, ...tail] : tail;
+    }
+
+    function makeMove(b, pos, player) {
+      return [...b.slice(0, pos), player, ...b.slice(pos + 1)];
+    }
+
+    function evaluateMovesRecursive(b, depth, isMax, moves, bestVal, bestMove) {
+      if (moves.length === 0) return { score: bestVal, move: bestMove };
+
+      const pos = moves[0];
+      const nextBoard = makeMove(b, pos, isMax ? "O" : "X");
+      const result = minimax(nextBoard, depth + 1, !isMax);
+
+      let newBestVal = bestVal;
+      let newBestMove = bestMove;
+
+      if (isMax) {
+        if (result.score > bestVal) {
+          newBestVal = result.score;
+          newBestMove = pos;
+        }
+      } else {
+        if (result.score < bestVal) {
+          newBestVal = result.score;
+          newBestMove = pos;
+        }
+      }
+
+      return evaluateMovesRecursive(b, depth, isMax, moves.slice(1), newBestVal, newBestMove);
+    }
+
+    function minimax(b, depth, isMax) {
+      const winData = checkWinner(b);
+      if (winData) return { score: winData.winner === "O" ? (10 - depth) : (depth - 10), move: null };
+      if (isBoardFull(b)) return { score: 0, move: null };
+
+      const moves = getAvailableMoves(b);
+      if (moves.length === 0) return { score: 0, move: null };
+
+      const initialVal = isMax ? -1000 : 1000;
+      return evaluateMovesRecursive(b, depth, isMax, moves, initialVal, moves[0]);
+    }
+
+    // -------------------------------------------------------------
+    // UI Renderers & Event Handlers
+    // -------------------------------------------------------------
+
+    function renderCells(idx = 0) {
+      if (idx === 9) return;
+      const cellEl = document.querySelectorAll(".cell")[idx];
+      const val = gameState.board[idx];
+      
+      cellEl.textContent = val === " " ? "" : val;
+      cellEl.className = "cell";
+      if (val === "X") cellEl.classList.add("x", "filled");
+      if (val === "O") cellEl.classList.add("o", "filled");
+      if (gameState.winningCells.includes(idx)) cellEl.classList.add("winning");
+
+      renderCells(idx + 1);
+    }
+
+    function updateStatusDisplay() {
+      const pill = document.getElementById("turnPill");
+      const text = document.getElementById("statusText");
+      const modeLabel = document.getElementById("modeLabel");
+
+      modeLabel.textContent = gameState.mode === "ai" ? "vs Unbeatable AI" : "2-Player PvP";
+
+      const winData = checkWinner(gameState.board);
+      if (winData) {
+        text.textContent = `Player ${winData.winner} Wins! 🎉`;
+        pill.textContent = winData.winner;
+        pill.className = `player-pill ${winData.winner.toLowerCase()}`;
+        return;
+      }
+
+      if (isBoardFull(gameState.board)) {
+        text.textContent = "It's a Draw! 🤝";
+        pill.textContent = "-";
+        pill.className = "player-pill";
+        return;
+      }
+
+      if (gameState.mode === "ai" && gameState.currentPlayer === "O") {
+        text.textContent = "AI is thinking...";
+        pill.textContent = "O";
+        pill.className = "player-pill o";
+      } else {
+        text.textContent = gameState.mode === "ai" ? "Your turn" : `Player ${gameState.currentPlayer}'s turn`;
+        pill.textContent = gameState.currentPlayer;
+        pill.className = `player-pill ${gameState.currentPlayer.toLowerCase()}`;
+      }
+    }
+
+    function handleCellClick(pos) {
+      if (!gameState.active || gameState.board[pos] !== " ") return;
+      if (gameState.mode === "ai" && gameState.currentPlayer === "O") return;
+
+      // 1. Player move
+      gameState.board = makeMove(gameState.board, pos, gameState.currentPlayer);
+      
+      const winData = checkWinner(gameState.board);
+      if (winData) {
+        gameState.active = false;
+        gameState.winningCells = winData.line;
+        renderCells();
+        updateStatusDisplay();
+        return;
+      }
+
+      if (isBoardFull(gameState.board)) {
+        gameState.active = false;
+        renderCells();
+        updateStatusDisplay();
+        return;
+      }
+
+      // 2. Next turn / AI trigger
+      if (gameState.mode === "pvp") {
+        gameState.currentPlayer = gameState.currentPlayer === "X" ? "O" : "X";
+        renderCells();
+        updateStatusDisplay();
+      } else if (gameState.mode === "ai") {
+        gameState.currentPlayer = "O";
+        renderCells();
+        updateStatusDisplay();
+        setTimeout(executeAiTurn, 220);
+      }
+    }
+
+    function executeAiTurn() {
+      if (!gameState.active) return;
+      const best = minimax(gameState.board, 0, true);
+      if (best.move !== null) {
+        gameState.board = makeMove(gameState.board, best.move, "O");
+      }
+
+      const winData = checkWinner(gameState.board);
+      if (winData) {
+        gameState.active = false;
+        gameState.winningCells = winData.line;
+      } else if (isBoardFull(gameState.board)) {
+        gameState.active = false;
+      } else {
+        gameState.currentPlayer = "X";
+      }
+
+      renderCells();
+      updateStatusDisplay();
+    }
+
+    function toggleMode() {
+      gameState.mode = gameState.mode === "ai" ? "pvp" : "ai";
+      document.getElementById("modeBtnText").textContent = gameState.mode === "ai" ? "Mode: 🤖 vs AI" : "Mode: 👥 2-Player";
+      resetGame();
+    }
+
+    function resetGame() {
+      gameState.board = [...INITIAL_BOARD];
+      gameState.currentPlayer = "X";
+      gameState.active = true;
+      gameState.winningCells = [];
+      renderCells();
+      updateStatusDisplay();
+    }
+
+    // Initialize UI on load
+    resetGame();
+  </script>
+</body>
+</html>

@@ -25,10 +25,17 @@ def dispatch_argument(args):
         return main_menu()
     elif arg in ("--audit", "--check", "-a"):
         return run_ast_audit(return_to_menu=False)
+    elif arg in ("--web", "-w"):
+        import webbrowser
+        index_path = os.path.join(BASE_DIR, "index.html")
+        print("Opening Web Frontend in browser: " + index_path)
+        webbrowser.open("file://" + os.path.abspath(index_path))
+        return
     elif arg in ("--help", "-h"):
         print("Loopless Tic-Tac-Toe")
         print("Usage:")
         print("  python main.py        Launch interactive CLI menu")
+        print("  python main.py --web  Open Minimalist Web Frontend in Browser")
         print("  python main.py --gui  Launch Desktop Tkinter GUI")
         print("  python main.py --cli  Launch Terminal CLI")
         print("  python main.py --check Run AST Zero-Loop Validator")
