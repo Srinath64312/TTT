@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>One Piece: Grand Line Tic-Tac-Toe • Loopless</title>
+  <title>One Piece: Grand Line Tic-Tac-Toe • Multi-Level AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
        THEME VARIABLES
     ------------------------------------------------------------- */
     :root {
-      /* Default: ONE PIECE THEME */
       --theme-name: 'onepiece';
       --bg-base: #06080e;
       --bg-grad-1: rgba(220, 38, 38, 0.16);
@@ -42,7 +41,6 @@
       --radius-xl: 32px;
     }
 
-    /* Watermelon Theme */
     [data-theme="watermelon"] {
       --bg-base: #07090e;
       --bg-grad-1: rgba(255, 45, 96, 0.15);
@@ -59,7 +57,6 @@
       --text-gold: #00e599;
     }
 
-    /* Cyberpunk Arcade Theme */
     [data-theme="cyber"] {
       --bg-base: #030308;
       --bg-grad-1: rgba(168, 85, 247, 0.2);
@@ -76,7 +73,6 @@
       --text-gold: #06b6d4;
     }
 
-    /* Neo-Brutalist Theme */
     [data-theme="neobrutal"] {
       --bg-base: #fef08a;
       --bg-grad-1: rgba(244, 63, 94, 0.1);
@@ -132,7 +128,7 @@
       max-width: 480px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       position: relative;
       z-index: 2;
     }
@@ -145,7 +141,7 @@
       width: 100%;
     }
 
-    .theme-select-wrap {
+    .select-pill-wrap {
       display: flex;
       align-items: center;
       gap: 6px;
@@ -157,12 +153,12 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    [data-theme="neobrutal"] .theme-select-wrap {
+    [data-theme="neobrutal"] .select-pill-wrap {
       border: 2px solid #000;
       box-shadow: 3px 3px 0 #000;
     }
 
-    .theme-select {
+    .clean-select {
       background: transparent;
       border: none;
       color: var(--text-main);
@@ -171,7 +167,7 @@
       cursor: pointer;
       outline: none;
     }
-    .theme-select option {
+    .clean-select option {
       background: #0f172a;
       color: #fff;
     }
@@ -206,14 +202,14 @@
 
     .wanted-tag {
       font-family: 'Cinzel', serif;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 900;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text-gold);
       background: rgba(245, 158, 11, 0.12);
       border: 1px solid rgba(245, 158, 11, 0.3);
-      padding: 3px 14px;
+      padding: 3px 12px;
       border-radius: 6px;
       display: inline-flex;
       align-items: center;
@@ -228,7 +224,7 @@
 
     .title-banner {
       font-family: 'Cinzel', serif;
-      font-size: 2.1rem;
+      font-size: 2rem;
       font-weight: 900;
       letter-spacing: -0.02em;
       line-height: 1.1;
@@ -242,16 +238,16 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-text-fill-color: #000000;
       text-shadow: none;
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       font-weight: 800;
     }
 
-    /* Bounty Bento Board */
+    /* Bento Cards */
     .bento-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-lg);
-      padding: 14px 18px;
+      padding: 12px 16px;
       backdrop-filter: blur(16px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
       transition: all 0.2s ease;
@@ -277,7 +273,7 @@
 
     .bounty-title {
       font-family: 'Cinzel', serif;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 900;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -286,7 +282,7 @@
 
     .bounty-amount {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--text-gold);
       display: flex;
@@ -301,7 +297,7 @@
     }
 
     .bounty-rank {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 9999px;
@@ -317,12 +313,38 @@
       box-shadow: 2px 2px 0 #000;
     }
 
+    /* Difficulty & Mode Selector Grid */
+    .difficulty-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .diff-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .diff-selector-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 3px 8px;
+      border-radius: 8px;
+    }
+
     /* Battle Status Bar */
     .status-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 18px;
+      padding: 12px 16px;
     }
 
     .status-side {
@@ -332,13 +354,13 @@
     }
 
     .pirate-icon {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 800;
       transition: all 0.25s ease;
     }
@@ -363,13 +385,13 @@
     }
 
     .status-main-text {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 800;
       color: var(--text-main);
     }
 
     .status-sub-text {
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       color: var(--text-muted);
       font-family: 'JetBrains Mono', monospace;
     }
@@ -482,9 +504,9 @@
     }
 
     .action-btn {
-      padding: 13px 16px;
+      padding: 12px 16px;
       border-radius: var(--radius-md);
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
@@ -539,7 +561,7 @@
       justify-content: space-around;
       align-items: center;
       padding: 10px 16px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
     }
@@ -566,9 +588,9 @@
   <div class="container">
     <!-- Top Nav & Theme Switcher -->
     <div class="top-nav">
-      <div class="theme-select-wrap">
+      <div class="select-pill-wrap">
         <span style="font-size: 0.9rem;">🎨</span>
-        <select class="theme-select" id="themeSelector" onchange="changeTheme(this.value)">
+        <select class="clean-select" id="themeSelector" onchange="changeTheme(this.value)">
           <option value="onepiece">👒 One Piece (Grand Line)</option>
           <option value="watermelon">🍉 Watermelon Cyber</option>
           <option value="cyber">🕹️ Cyber Arcade</option>
@@ -588,7 +610,7 @@
       <h1 class="title-banner" id="mainTitle">GRAND LINE TTT</h1>
     </header>
 
-    <!-- Bounty Card -->
+    <!-- Bounty & Level Bento Card -->
     <div class="bento-card">
       <div class="bounty-row">
         <div class="bounty-left">
@@ -599,6 +621,19 @@
           </div>
         </div>
         <div class="bounty-rank" id="bountyRank">East Blue Rookie</div>
+      </div>
+    </div>
+
+    <!-- Difficulty / Mode Selector Card -->
+    <div class="bento-card difficulty-bar">
+      <span class="diff-label">⚔️ AI Level</span>
+      <div class="diff-selector-pill">
+        <select class="clean-select" id="difficultySelector" onchange="changeDifficulty(this.value)">
+          <option value="easy">🥉 East Blue (Easy / 🤡 Buggy)</option>
+          <option value="medium">🥈 Grand Line (Medium / 🐊 Crocodile)</option>
+          <option value="hard">🥇 New World (Hard / ⚡ Kizaru)</option>
+          <option value="impossible" selected>👑 Pirate King (Unbeatable / 🧠 Vegapunk)</option>
+        </select>
       </div>
     </div>
 
@@ -642,7 +677,7 @@
     <!-- Win/Loss Stats -->
     <div class="bento-card stats-footer">
       <div>Straw Hat Wins: <strong id="winsX" style="color: var(--color-x)">0</strong></div>
-      <div>Marine Wins: <strong id="winsO" style="color: var(--color-o)">0</strong></div>
+      <div>AI Wins: <strong id="winsO" style="color: var(--color-o)">0</strong></div>
       <div>Draws: <strong id="tiesCount">0</strong></div>
     </div>
   </div>
@@ -680,18 +715,15 @@
 
     function soundClash(player) {
       if (player === 'X') {
-        // Sword slash chime
         playTone(587.33, 'triangle', 0.15, 0.25);
         setTimeout(() => playTone(880, 'sine', 0.12, 0.2), 60);
       } else {
-        // Marine Cannon boom
         playTone(160, 'sawtooth', 0.2, 0.25);
         setTimeout(() => playTone(110, 'sine', 0.25, 0.3), 70);
       }
     }
 
     function soundVictory() {
-      // Grand Line Pirate Triumph Chime
       const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
         setTimeout(() => playTone(freq, 'triangle', 0.3, 0.25), idx * 110);
@@ -731,17 +763,24 @@
     }
 
     // -------------------------------------------------------------
-    // 100% Loop-Free Game Engine & Recursive Minimax AI
+    // 100% Loop-Free Multi-Level Game Engine & Recursive Minimax AI
     // -------------------------------------------------------------
     const INITIAL_BOARD = [" ", " ", " ", " ", " ", " ", " ", " ", " "];
     let gameState = {
       board: [...INITIAL_BOARD],
       currentPlayer: "X",
       mode: "ai",
+      difficulty: "impossible",
       active: true,
       winningCells: [],
-      stats: { x: 0, o: 0, ties: 0 },
-      streak: 0
+      stats: { x: 0, o: 0, ties: 0 }
+    };
+
+    const AI_TITLES = {
+      easy: { name: "Buggy the Clown AI 🤡", avatar: "🤡" },
+      medium: { name: "Crocodile AI 🐊", avatar: "🐊" },
+      hard: { name: "Admiral Kizaru AI ⚡", avatar: "⚡" },
+      impossible: { name: "Vegapunk AI 🧠", avatar: "🧠" }
     };
 
     function checkWinner(b) {
@@ -809,6 +848,48 @@
       return evaluateMovesRecursive(b, depth, isMax, moves, initialVal, moves[0]);
     }
 
+    function findImmediateWinRecursive(b, moves, player) {
+      if (moves.length === 0) return null;
+      const pos = moves[0];
+      const nextBoard = makeMove(b, pos, player);
+      const win = checkWinner(nextBoard);
+      if (win && win.winner === player) return pos;
+      return findImmediateWinRecursive(b, moves.slice(1), player);
+    }
+
+    function getMultiLevelAiMove(b, difficulty) {
+      const moves = getAvailableMoves(b);
+      if (moves.length === 0) return null;
+
+      if (difficulty === "easy") {
+        if (Math.random() < 0.75) {
+          return moves[Math.floor(Math.random() * moves.length)];
+        }
+        return minimax(b, 0, true).move;
+      }
+
+      if (difficulty === "medium") {
+        const winMove = findImmediateWinRecursive(b, moves, "O");
+        if (winMove !== null) return winMove;
+        const blockMove = findImmediateWinRecursive(b, moves, "X");
+        if (blockMove !== null) return blockMove;
+        if (Math.random() < 0.40) {
+          return moves[Math.floor(Math.random() * moves.length)];
+        }
+        return minimax(b, 0, true).move;
+      }
+
+      if (difficulty === "hard") {
+        if (Math.random() < 0.12) {
+          return moves[Math.floor(Math.random() * moves.length)];
+        }
+        return minimax(b, 0, true).move;
+      }
+
+      // Default / Impossible
+      return minimax(b, 0, true).move;
+    }
+
     // -------------------------------------------------------------
     // UI Renderers & Interactions
     // -------------------------------------------------------------
@@ -817,11 +898,7 @@
       const cellEl = document.querySelectorAll(".grid-slot")[idx];
       const val = gameState.board[idx];
       
-      let symbol = "";
-      if (val === "X") symbol = "X";
-      if (val === "O") symbol = "O";
-
-      cellEl.textContent = symbol;
+      cellEl.textContent = val === " " ? "" : val;
       cellEl.className = "grid-slot";
       if (val === "X") cellEl.classList.add("x", "occupied");
       if (val === "O") cellEl.classList.add("o", "occupied");
@@ -840,6 +917,10 @@
       const avatar = document.getElementById("statusAvatar");
       const title = document.getElementById("statusTitle");
       const sub = document.getElementById("statusSub");
+      const badge = document.getElementById("modeBadge");
+
+      const aiInfo = AI_TITLES[gameState.difficulty] || AI_TITLES.impossible;
+      badge.textContent = gameState.mode === "ai" ? ("vs " + aiInfo.name) : "👥 2-Player Local";
 
       const winData = checkWinner(gameState.board);
       if (winData) {
@@ -849,9 +930,9 @@
           avatar.textContent = "👑";
           avatar.className = "pirate-icon x";
         } else {
-          title.textContent = "Marines Suppress! ⚓";
-          sub.textContent = "Vegapunk AI defended the fleet!";
-          avatar.textContent = "⚓";
+          title.textContent = aiInfo.name + " Wins! ⚓";
+          sub.textContent = "Grand Line defense prevailed!";
+          avatar.textContent = aiInfo.avatar;
           avatar.className = "pirate-icon o";
         }
         return;
@@ -866,14 +947,14 @@
       }
 
       if (gameState.mode === "ai" && gameState.currentPlayer === "O") {
-        title.textContent = "Vegapunk AI Calculating...";
-        sub.textContent = "Reading the winds of the Grand Line";
-        avatar.textContent = "⚓";
+        title.textContent = aiInfo.name + " Calculating...";
+        sub.textContent = "Plotting next move across the Grand Line";
+        avatar.textContent = aiInfo.avatar;
         avatar.className = "pirate-icon o";
       } else {
         title.textContent = gameState.mode === "ai" ? "Luffy's Turn (X)" : `Player ${gameState.currentPlayer}'s Turn`;
         sub.textContent = "Claim an open sea quadrant";
-        avatar.textContent = gameState.currentPlayer === "X" ? "👒" : "⚓";
+        avatar.textContent = gameState.currentPlayer === "X" ? "👒" : aiInfo.avatar;
         avatar.className = `pirate-icon ${gameState.currentPlayer.toLowerCase()}`;
       }
     }
@@ -894,7 +975,7 @@
         gameState.winningCells = winData.line;
         gameState.stats[winData.winner.toLowerCase()] += 1;
         if (winData.winner === 'X') {
-          currentBountyIndex += 1;
+          currentBountyIndex += (gameState.difficulty === 'impossible' ? 2 : 1);
           updateBountyDisplay();
           soundVictory();
           launchPirateConfetti();
@@ -931,10 +1012,10 @@
 
     function executeAiTurn() {
       if (!gameState.active) return;
-      const best = minimax(gameState.board, 0, true);
+      const bestMove = getMultiLevelAiMove(gameState.board, gameState.difficulty);
 
-      if (best.move !== null) {
-        gameState.board = makeMove(gameState.board, best.move, "O");
+      if (bestMove !== null && bestMove !== undefined) {
+        gameState.board = makeMove(gameState.board, bestMove, "O");
         soundClash("O");
       }
 
@@ -957,10 +1038,16 @@
       updateStatusDisplay();
     }
 
+    function changeDifficulty(val) {
+      gameState.difficulty = val;
+      updateStatusDisplay();
+      resetGame(false);
+    }
+
     function toggleMode() {
       gameState.mode = gameState.mode === "ai" ? "pvp" : "ai";
-      document.getElementById("modeBadge").textContent = gameState.mode === "ai" ? "vs Vegapunk AI" : "👥 2-Player Local";
       document.getElementById("modeBtnText").textContent = gameState.mode === "ai" ? "👥 Switch to PvP" : "🤖 Switch to AI";
+      updateStatusDisplay();
       resetGame(false);
     }
 

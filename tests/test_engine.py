@@ -1,5 +1,5 @@
 """
-Unit tests for Loopless Game Engine & AI.
+Unit tests for Loopless Game Engine & Multi-Level AI.
 """
 
 import unittest
@@ -13,6 +13,7 @@ from src.engine import (
     make_move,
     minimax,
     get_best_ai_move,
+    get_ai_move,
 )
 
 
@@ -74,6 +75,12 @@ class TestLooplessEngine(unittest.TestCase):
         board = ("O", "O", " ", "X", "X", " ", " ", " ", " ")
         best_move = get_best_ai_move(board, ai_player="O", human_player="X")
         self.assertEqual(best_move, 2)
+
+    def test_multi_level_ai_returns_valid_move(self):
+        board = ("X", " ", " ", " ", "O", " ", " ", " ", " ")
+        for diff in ("easy", "medium", "hard", "impossible"):
+            move = get_ai_move(board, difficulty=diff, ai_player="O", human_player="X")
+            self.assertIn(move, (1, 2, 3, 5, 6, 7, 8))
 
 
 if __name__ == "__main__":
